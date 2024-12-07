@@ -13,7 +13,7 @@ public:
     BoolV(int nn = 1)
     {
         nbit = nn;
-        size_v = (nn - 1)/ 32 + 1;
+        size_v = (nn - 1) / 32 + 1;
         vec = new unsigned int[size_v];
         for(int i = 0; i < size_v; i++)
             vec[i] = 0;
@@ -65,24 +65,23 @@ public:
         {
             if(vec[i/32] & mask)
                 count++;
+                
             mask = mask << 1;
+            
             if(mask == 0)
                 mask = 1;
         }
         return count;
     }
 
-    void set1(int pos)
+    void set1(int pos)//5 
     {
         if(pos > nbit || pos < 0)
         {
-            cout << "INdex out of range" << endl;
+            cout << "Index out of range" << endl;
             exit(-1);
         }
-
-        if(pos != 1)
-            pos--;
-
+        
         unsigned int mask = 1;
         int byte_v = pos / 32;
         mask = mask << (pos % 32);
@@ -96,20 +95,12 @@ public:
             cout << "INdex out of range" << endl;
             exit(-2);
         }
-
-        if(pos != 1)
-            pos--;
-
+        
         unsigned int mask = 1;
         int byte_v = pos / 32;
         mask = mask << (pos % 32);
         vec[byte_v] = vec[byte_v] & ~(mask);
     }
-
-//    int operator[](int pos) const {
-//            if (pos >= nbit || pos < 0) return -1; //Handle out-of-bounds; Return -1 to indicate error
-//            return (vec[pos / 32] >> (pos % 32)) & 1U;
-//        }
 
     int operator[](int pos)
     {
@@ -122,7 +113,8 @@ public:
         unsigned int mask = 1;
         int byte_v = pos / 32;
         mask = mask << (pos % 32);
-        int res = vec[byte_v] & mask;
+        bool res = vec[byte_v] & mask;
+        
         return res;
     }
 
@@ -159,11 +151,7 @@ public:
 
     BoolV operator|(const BoolV &other)//логическое или
     {
-        int size = 0;
-        if(nbit > other.nbit)
-            size = nbit;
-        else
-            size = other.nbit;
+        int  size = nbit;
 
         BoolV res(size);
 
@@ -176,11 +164,7 @@ public:
 
     BoolV operator& (const BoolV &other)
     {
-        int size = 0;
-        if(nbit > other.nbit)
-            size = nbit;
-        else
-            size = other.nbit;
+        int size = nbit;
 
         BoolV res(size);
 
@@ -191,7 +175,7 @@ public:
         return res;
     }
 
-    BoolV operator~()
+    BoolV operator~()//&&&&&&&&&&&&&&&&&&&&&
     {
         BoolV res(nbit);
 
@@ -202,16 +186,6 @@ public:
 
         return res;
     }
-
-//    BoolV operator<< (int k)
-//    {
-
-//    }
-
-//    BoolV operator>> (int k)
-//    {
-
-//    }
 
     friend ostream& operator<< (ostream &os, const BoolV &boolV)
     {
