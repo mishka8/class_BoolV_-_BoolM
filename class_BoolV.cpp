@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstring>
-
+#include <fstream>
 
 using namespace std;
 
@@ -8,7 +8,7 @@ class BoolV
 {
     unsigned int *vec;
     int nbit;// nbit – количество бит вектора
-    int size_v;//размер вектора или количество элементов массива vec
+    int size_v;//размер вектора или количество элементов массива vec (bytes)
 public:
     BoolV(int nn = 1)
     {
@@ -65,23 +65,23 @@ public:
         {
             if(vec[i/32] & mask)
                 count++;
-                
+
             mask = mask << 1;
-            
+
             if(mask == 0)
                 mask = 1;
         }
         return count;
     }
 
-    void set1(int pos)//5 
+    void set1(int pos)//5
     {
         if(pos > nbit || pos < 0)
         {
             cout << "Index out of range" << endl;
             exit(-1);
         }
-        
+
         unsigned int mask = 1;
         int byte_v = pos / 32;
         mask = mask << (pos % 32);
@@ -95,7 +95,7 @@ public:
             cout << "INdex out of range" << endl;
             exit(-2);
         }
-        
+
         unsigned int mask = 1;
         int byte_v = pos / 32;
         mask = mask << (pos % 32);
@@ -114,7 +114,7 @@ public:
         int byte_v = pos / 32;
         mask = mask << (pos % 32);
         bool res = vec[byte_v] & mask;
-        
+
         return res;
     }
 
@@ -175,13 +175,15 @@ public:
         return res;
     }
 
-    BoolV operator~()//&&&&&&&&&&&&&&&&&&&&&
+    BoolV operator~()
     {
-        BoolV res(nbit);
+        BoolV res(*this);//конструктор копирования
 
+        //int uslesbits = size_v * 32 - nbit;
+        unsigned int mask = 65535;
         for(int i = 0; i < size_v; i++)
         {
-            res.vec[i] = ~vec[i];
+            res.vec[i] = vec[i] ^ mask;
         }
 
         return res;
@@ -278,6 +280,31 @@ public:
 
     }
 
+    BoolM CreateMx_byGraf()
+    {
+        ifstream file("graf.txt");
+        if(!file.is_open())
+        {
+            cout << "file not open" << endl;
+            exit(-4);
+        }
+
+        int a, b;//a - начало b - конец
+        int m;//количество вершин
+
+        file >> m;
+        BoolM Mx(m, m);
+
+        while(file >> a >> b)
+        {
+            Mx[a - 1].set1(b - 1);
+        }
+
+        file.close();
+
+        return Mx;
+    }
+
     friend ostream& operator<< (ostream& os, BoolM &boolM)
     {
         for(int i = 0; i < boolM.m; i++)
@@ -287,6 +314,7 @@ public:
         return os;
     }
 };
+
 
 
 int main()
@@ -313,7 +341,7 @@ int main()
 
     cout << "vec3.set1(5) - " << vec3;
     vec3 = ~vec3;
-     cout << "~vec3 - " << vec3 << endl;
+    cout << "~vec3 - " << vec3 << endl;
 
     BoolV vec4;
 
