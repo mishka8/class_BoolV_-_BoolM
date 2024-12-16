@@ -175,17 +175,18 @@ public:
         return res;
     }
 
-    BoolV operator~()
+    BoolV operator~()//????????
     {
         BoolV res(*this);//конструктор копирования
-
-        //int uslesbits = size_v * 32 - nbit;
+        
         unsigned int mask = 65535;
         for(int i = 0; i < size_v; i++)
         {
-            res.vec[i] = vec[i] ^ mask;
+            res.vec[i] = ~vec[i];
         }
-
+        unsigned int  mask = (1 << (nbit % 32)) - 1;
+        res.vec[size_v - 1] = res.vec[size - 1] & mask;
+        
         return res;
     }
 
