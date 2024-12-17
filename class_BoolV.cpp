@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -178,15 +179,15 @@ public:
     BoolV operator~()//????????
     {
         BoolV res(*this);//конструктор копирования
-        
+
         unsigned int mask = 65535;
         for(int i = 0; i < size_v; i++)
         {
             res.vec[i] = ~vec[i];
         }
-        unsigned int  mask = (1 << (nbit % 32)) - 1;
-        res.vec[size_v - 1] = res.vec[size - 1] & mask;
-        
+        mask = (1 << (nbit % 32)) - 1;
+        res.vec[size_v - 1] = res.vec[size_v - 1] & mask;
+
         return res;
     }
 
@@ -255,6 +256,16 @@ public:
         delete[] bm;
     }
 
+    int getRows()//строчки
+    {
+        return m;
+    }
+
+    int getCols()//cтолбцы
+    {
+        return n;
+    }
+
     BoolV & operator[] (int pos)
     {
         return bm[pos];
@@ -276,21 +287,65 @@ public:
         return *this;
     }
 
-    void TopSort(BoolM &M, int m, int *a)
+    void TopSort(BoolM &mx, int m, vector<int> &a)
     {
+
+
+
+        BoolV vec0(m), vec1(m), vec2(m), mask(m);
+
+        while(vec0.weight() != m)
+        {
+            for(int i = 0; i < m; i++)
+                    cout << mx;
+
+            vec1 = mask;
+
+            for(int i = 0; i < m; i++)
+                vec1 = vec1 | mx[i];
+
+            vec1 = ~vec1;//вершины в которые нельзя попасть;
+
+            vec2 = vec1 & (~vec0);//вершины в которых ещё не побывали
+
+            if(vec2 == mask)
+            {
+                cout << "dsafjkasjf" << endl;
+                exit(-5);
+            }
+
+            for(int i = 0; i < m; i++)
+            {
+                if(vec2[i] == 1)
+                {
+                    a.push_back(i + 1);
+                    mx[i] = mask;
+                }
+            }
+
+            vec0 = vec0 | vec2;
+
+            cout << "Vec0 - " << vec0 << endl;
+            cout << "Weight - " << vec0.weight() << endl;
+
+        }
 
     }
 
-    BoolM CreateMx_byGraf()
+    BoolM CreateMxByGraf()
     {
-        ifstream file("graf.txt");
+        string path = "graf.txt";
+        //ifstream file("graf.txt");
+        ifstream file;
+        file.open(path);
+
         if(!file.is_open())
         {
             cout << "file not open" << endl;
             exit(-4);
         }
 
-        int a, b;//a - начало b - конец
+        int a, b;//a - начало b - конец 
         int m;//количество вершин
 
         file >> m;
@@ -316,48 +371,25 @@ public:
     }
 };
 
-
-
 int main()
 {
-    BoolV vec1;
-    cin >> vec1;
+    // setlocale(LC_ALL, "ru");
 
-    cout << vec1;
+    BoolM mx;   
 
-    BoolV vec2("apa00011212la0");
-    //          11100011111110
+    mx.CreateMxByGraf();
 
-    cout << "vec2 - " << vec2;
+    cout << mx << endl;
 
-    BoolV vec3(vec2);
+    vector<int> a;
 
-    cout << "vec3 - " << vec3 << endl;
+    mx.TopSort(mx, mx.getRows(), a);
 
-    vec3.set0(10);
-
-    cout << "vec3.set0(10) - " << vec3;
-
-    vec3.set1(5);
-
-    cout << "vec3.set1(5) - " << vec3;
-    vec3 = ~vec3;
-    cout << "~vec3 - " << vec3 << endl;
-
-    BoolV vec4;
-
-    vec4 = vec3 & vec2;
-
-    cout << "vec4 = vec3 & vec2 = " << vec4 << endl;
-
-    BoolV vec5;
-
-    vec5 = vec3  | vec2;
-    cout << "vec5 = vec3 | vec2 = " << vec5 << endl;
-
-
-    int weight_vec5 = vec5.weight();
-    cout << weight_vec5 << endl;
+    for(int p : a)
+    {
+        cout << p << " ";
+    }
+    cout << endl;
 
     return 0;
 }
