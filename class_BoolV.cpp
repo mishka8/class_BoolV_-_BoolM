@@ -296,72 +296,65 @@ public:
 
 void BoolMatrix::TopSort(BoolMatrix& matrix, size_t m, vector<int>& arr) 
 {
-    BoolVec vec0(m);  // Использованные вершины
-    BoolVec vec1(m);  // Нет пути
-    BoolVec vec2(m);  // Ответ
-    BoolVec mask(m); 
+    BoolVec vec0(m);// использованные вершины
+    BoolVec vec1(m);// нет пути
+    BoolVec vec2(m);// вершины без входящих ребер но ещё не обработаны
+    BoolVec mask(m);// макса из нулей 
 
-    while (vec0.weight() != m) 
+    while (vec0.weight() != m)//пока все вершины не будут использованы
     {
-        cout << matrix << endl;
-        vec1 = mask;
-
-        // Вершины в которые можно попасть
-        for (int i = 0; i < m; i++)
+        vec1 = mask;//обнуляем при каждом проходе
+        
+        for (int i = 0; i < m; i++)// Вершины в которые есть путь
             vec1 = vec1 | matrix[i];
 
-        // Вершины, в которые нельзя попасть через другие
-        vec1 = ~vec1;
 
-        cout << "vec1 = " << vec1 << endl;
+        vec1 = ~vec1;//вершины в которые не имеют входящих дуг
+        
+        vec2 = vec1 & (~vec0);// необработанные верщины без входящих ребер
 
-        // Вершины, которые не посетили
-        vec2 = vec1 & (~vec0);
-        cout << vec2 << endl;
 
-        if (vec2 == mask) 
+        if (vec2 == mask)// проверка на цикл
         {
             cout << "Cycle!" << endl;
             exit(1);
         }
 
-        for (int i = 0; i < m; i++) 
+        for (int i = 0; i < m; i++)// цикл по вершинам
         {
-            if (vec2[i] == 1) {
-                arr.push_back(i + 1);
+            if (vec2[i] == 1)// если есть необработанная
+            {
+                arr.push_back(i + 1);// добавляем в конец вектора 
                 matrix[i] = mask;   // Удаляем рёбра из найденных вершин
             }
         }
 
-        vec0 = vec0 | vec2;
-
-        cout << "Vec0 = " << vec0 << endl;
-        cout << "Weight = " << vec0.weight() << endl;
+        vec0 = vec0 | vec2;// запоминаем обработанные вершины
     }
 }
 
 
 BoolMatrix ReadFromFile() 
 {
-    ifstream fileIn("graf.txt");
-    if (!fileIn.is_open()) 
+    ifstream fileIn("graf.txt");// открываем файл для чтения
+    if (!fileIn.is_open())// проверка  
     {
         cout << "File can't find\n";
         exit(1);
     }
 
-    int a, b;
-    int m;
+    int a, b;// вершины
+    int m;// количество вершин
 
     fileIn >> m;
     BoolMatrix boolM(m, m);
-    while (!fileIn.eof()) 
+    while (!fileIn.eof())// идём до конца файла
     {
         fileIn >> a;
         fileIn >> b;
-        boolM[a - 1].Set1(b - 1);
+        boolM[a - 1].Set1(b - 1);//в столбец a и строчку b устанавляваем 1 что есть такой путь
     }
-    fileIn.close();
+    fileIn.close();// закрываем файл
 
     return boolM;
 }
